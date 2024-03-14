@@ -136,9 +136,19 @@ fun main() {
         }
     } 
 
-    fun computeHours() {
+    fun computeHours(): Int {
         /* TODO */
-        TEsting
-    }
+        var hrInTime = (inTime.substring(0,2)).toInt() + 1 //get hours only 
+        var hrOutTime = (outTime.substring(0,2)).toInt() + 1 //get hours only
+        var hours: Int = 0
+        while(hrInTime != hrOutTime){
+            if(hrInTime == 24){
+                hrInTime -= 24
+            }
+            hrInTime++
+            hours++
+        }
+    
+        return hours
 }
 
