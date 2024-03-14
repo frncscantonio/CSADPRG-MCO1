@@ -104,10 +104,17 @@ val dailySalary = 500.0
 val maxHours = 8
 val workDays = 5
 val normDays = 7
-var currDay = 0
 val inTime = "0900" // TODO: convert to military time
 val outTime = "0900" // TODO: convert to military time
 val dailySalaryArray = DoubleArray()
+var currDay = 0
+
+/* default settings per day (can be modified by the user) */
+var currShiftType = "REGULAR_SHIFT"
+var currDayType = "NORMAL_DAY"
+var currAbsentStatus = "NO"
+var currTimeIn = inTime
+var currTimeOut = outTime
 
 enum class dayType(val multipliers: DoubleArray) {
     NORMAL_DAY(doubleArrayOf(1.0, 1.25, 1.375)),
@@ -131,14 +138,10 @@ enum class shiftType(val i: DoubleArray) {
     }
 }
 
+
 fun main() {
     while (currDay < normDays) {
-        var currShiftType = "REGULAR_SHIFT"
-        var currDayType = "NORMAL_DAY"
-        var currAbsentStatus = "NO"
-        var currTimeIn = inTime
-        var currTimeOut = outTime
-
+        
         println("Day ${currDay + 1}")
         println("Day Type: ${currDayType}")
         println("Shift Type: ${currShiftType}")
@@ -162,10 +165,19 @@ fun main() {
             "3" -> currTimeOut = editTimeOut(currTimeOut)
             "N" -> {
                 computeDay(currDay, currDayType, currShiftType, currAbsentStatus, currTimeIn, currTimeOut)
+                refreshDay()
                 currDay = currDay + 1
             }
             "X" -> exitProcess(0) // TODO: maybe confirmation prompt?
         }
+    }
+
+    fun refreshDay() {
+        currShiftType = "REGULAR_SHIFT"
+        currDayType = "NORMAL_DAY"
+        currAbsentStatus = "NO"
+        currTimeIn = inTime
+        currTimeOut = outTime
     }
 
     fun editDayType(x: String): String {
