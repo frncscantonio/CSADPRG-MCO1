@@ -1,103 +1,3 @@
-/* from R */
-
-// # default values
-// dailySalary <- 500
-// maxHours <- 8
-// workDays <- 5
-// normDays <- 7
-// currDay <- 0
-// inTime <- 0900
-// outTime <- 0900
-// shiftType <- c("REGULAR SHIFT" = 1, "NIGHT SHIFT" = 2)
-// dayType <- c(
-//     "NORMAL DAY" = c(1.0, 1.25, 1.375), 
-//     "REST DAY" = c(1.30, 1.69, 1.859), 
-//     "SPECIAL NON-WORKING DAY" = c(1.30, 1.69, 1.859), 
-//     "SPECIAL NON-WORKING DAY AND REST DAY" = c(1.50, 1.95, 2.145), 
-//     "REGULAR HOLIDAY" = c(2, 2.60, 2.86),
-//     "REGULAR HOLIDAY AND REST DAY" = c(2.60, 3.38 3.718)) 
-// dailySalary <- vector("numeric", length = normDays)
-
-// # source('functions.r') # to access all functions in functions.r
-
-// while(currDay < normDays) {
-//     do{
-//         currShiftType <= "REGULAR SHIFT"
-//         currDayType <= "NORMAL DAY"
-//         currAbsentStatus <= "NO"
-//         currTimeIn <= inTime 
-//         currTimeOut <= outTime 
-
-//         # menu
-//         print(paste("Day ", currDay + 1))
-//         print(paste("Day Type: ", names(dayType)[which(dayType == dayType["currDayType"])])
-//         print(paste("Shift Type: ", names(dayType)[which(dayType == dayType["currShiftType"])]))
-//         print(paste("Absent? ", currAbsentStatus)
-//         print(paste("Time in: ", currInTime))
-//         print(paste("Time out: ", currOutTime))
-
-//         print("[0] Edit Day Type")
-//         print("[1] Edit Absent Status")
-//         print("[2] Edit Time In")
-//         print("[3] Edit Time Out")
-//         print("[N] Next Day")
-//         print("[X] Exit Program")
-
-        
-//         menuInput <- readline()
-//         match(menuInput,
-//             '0' = currDayType <- editDayType(currDayType)
-//             '1' = currAbsentStatus <- editAbsent(currAbsentStatus)
-//             '2' = currTimeIn <- editTimeIn(currTimeIn)
-//             '3' = currTimeOut <- editTimeOut(currTimeOut)
-//             'N' = computeDay(currDay, currDayType, currShiftType, currAbsentStatus, currTimeIn, currTimeOut);
-//                 currDay < currDay + 1
-//             'X' = q()
-//         )
-//     while(menuInput != 'N')
-
-// }
-
-// editDayType <- function(x) {
-//     print(paste("Current Day Type: ", names(dayType)[which(dayType == dayType["x"])])
-//     print("[N] Normal Day")
-//     print("[R] Rest Day")
-//     print("[SNW] Special Non-Working Day")
-//     print("[SNWR] Special Non-Working Day & Rest Day")
-//     print("[RH] Regular Holiday")
-//     print("[RHR] Regular Holiday & Rest Day")
-
-//     input <- readline()
-//     match(menuInput,
-//         'N' = x <- "NORMAL DAY"
-//         'R' = x <- "REST DAY"
-//         'SNW' = x <- "SPECIAL NON-WORKING DAY"
-//         'SNWR' = x <- "SPECIAL NON-WORKING DAY AND REST DAY"
-//         'RH' = x <- "REGULAR HOLIDAY"
-//         'RHR' = x <- "REGULAR HOLIDAY AND REST DAY"
-//     )
-
-//     print(paste("Current Day Type successfuly changed."))
-//     return(x)
-// }
-
-// computeDay <- function(day, dayType, shiftType, absentStatus, timeIn, timeOut) {
-//     if(absentStatus == "YES") {
-//         dailySalary[day] <- 0
-//     } else {
-//         numHrs <- computeHours(timeIn, timeOut) # compute number of hours to check if overtime
-//         overtimeHrs <- numHrs - maxHours 
-//         if(overtimeHrs > 0) {
-//             dailySalary[day] <- dailySalary * (dayType[dayType][shiftType] * overtimeHrs)
-//         } else {
-//             dailySalary[day] <- dailySalary * dayType[dayType][shiftType]
-//         }
-//     }
-// }
-
-// TODO: Work from 2200 to 0600 is considered night shift. An additional 10% of the hourly
-// rate is given for every hour of work during the night shift. (Night shift differential).
-
 import kotlin.system.exitProcess
 
 val dailySalary = 500.0
@@ -106,7 +6,7 @@ val workDays = 5
 val normDays = 7
 val inTime = "0900" // TODO: convert to military time
 val outTime = "0900" // TODO: convert to military time
-val dailySalaryArray = DoubleArray()
+var salaryPerDay = ArrayList<Double>() 
 var currDay = 0
 
 /* default settings per day (can be modified by the user) */
@@ -129,13 +29,9 @@ enum class dayType(val multipliers: DoubleArray) {
     }
 }
 
-enum class shiftType(val i: DoubleArray) {
+enum class shiftType(val i: Int) {
     REGULAR_SHIFT(1),
     NIGHT_SHIFT(2)
-
-    operator fun get(index: Int): Double {
-        return i[index]
-    }
 }
 
 
@@ -200,13 +96,48 @@ fun main() {
             "RHR" -> "REGULAR_HOLIDAY_AND_REST_DAY"
             else -> {
                 println("Invalid input. Current Day Type remains unchanged.")
-                x
+                x 
             }       
         }.also {
             println("Current Day Type successfully changed.")
         }
     }
 
-    fun computeDay 
+    fun editAbsentStatus() {
+        /* TODO: if YES, currTimeIn and currTimeOut should automattically be "-" 
+        and the user cannot modify these until the currentAbsentStatus is NO. */
+    }
+
+    fun editTimeIn() {
+        /* TODO: should automatically update currShiftType also depending on the user's timeIn */
+    }
+
+    fun editTimeIn() {
+        /* TODO: simple modification */
+    }
+
+    /*  TODO: Work from 2200 to 0600 is considered night shift. An additional 10% of the hourly
+    rate is given for every hour of work during the night shift. (Night shift differential). */ 
+    fun computeDay() {
+        if(currAbsentStatus == "YES") {
+            salaryPerDay.add(0.00)
+        } else {
+            var numHours = computeHours()
+            var overtimeHours = numHours - maxHours
+            var totalSalary = 0
+
+            if(overtimeHours > 0) {
+                totalSalary = dailySalary + ((dailySalary * dayType.valueOf(currDayType).multipliers[dayType.valueOf(currShiftType).i]) * overtimeHours) // TODO: double check
+                salaryPerDay.add(totalSalary) 
+            } else {
+                totalSalary = dailySalary + (dailySalary * dayType.valueOf(currDayType).multipliers[dayType.valueOf(currShiftType).i])
+                salaryPerDay.add(totalSalary) 
+            }
+        }
+    } 
+
+    fun computeHours() {
+        /* TODO */
+    }
 }
 
