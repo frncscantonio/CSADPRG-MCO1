@@ -1,0 +1,2 @@
+to compile: kotlinc main.kt -d main.jar
+to run: java -jar main.jar
