@@ -1,4 +1,6 @@
 import kotlin.system.exitProcess
+import kotlin.text.toLowerCase
+import kotlin.text.lowercase
 
 val dailySalary: Double = 500.0
 val maxHours = 8
@@ -54,11 +56,11 @@ fun main() {
         println("[X]\tExit Program")
 
         print("\n>>\t")
-        val menuInput: String? = readLine()
+        val menuInput: String? = readLine()?.uppercase()
 
         when (menuInput) {
             "0" -> editDayType()
-            // "1" -> editAbsent()
+            "1" -> editAbsentStatus()
             // "2" -> editTimeIn()
             // "3" -> editTimeOut()
             "N" -> {
@@ -111,10 +113,32 @@ fun editDayType() {
 }
 
 
-// fun editAbsentStatus() {
-//     /* TODO: if YES, currTimeIn and currTimeOut should automattically be "-" 
-//     and the user cannot modify these until the currentAbsentStatus is NO. */
-// }
+fun editAbsentStatus() {
+    /* TODO: if YES, currTimeIn and currTimeOut should automattically be "-" 
+    and the user cannot modify these until the currentAbsentStatus is NO. */
+    println("Current Absent Status: ${currAbsentStatus}\n")
+    println("[Y]\tYes")
+    println("[N]\tNo")
+    println("[X]\tCancel Edit")
+
+    print("\n>>\t")
+    val input: String? = readLine()?.uppercase()
+
+    when(input) {
+        "Y" -> {
+            currTimeIn == "-"
+            currTimeOut == "-"
+            currAbsentStatus = "YES"
+        }
+        "N" -> currAbsentStatus = "NO"
+        "X" -> { println("\nCurrent Absent Status remains unchanged.")
+                 return}
+        else -> {
+            println("\nInvalid input. Current Absent Status remains unchanged.")
+            return
+        }
+    }
+}
 
 // fun editTimeIn() {
 //     /* TODO: should automatically update currShiftType also depending on the user's timeIn */
@@ -145,6 +169,7 @@ fun computeDay() {
 } 
 
 fun computeHours(): Int {
+    
     var hrInTime = (currTimeIn.substring(0,2)).toInt() + 1 // get hours only 
     var hrOutTime = (currTimeOut.substring(0,2)).toInt() + 1 // get hours only
     var hours: Int = 0
@@ -155,8 +180,9 @@ fun computeHours(): Int {
         hrInTime++
         hours++
     }
-
     return hours
+    
+      
 }
 
 
