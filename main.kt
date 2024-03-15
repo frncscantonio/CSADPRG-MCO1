@@ -180,7 +180,7 @@ fun computeHours(): Int {
 
 fun editTimeIn() {
     /* TODO: should automatically update currShiftType also depending on the user's timeIn */
-    
+
     if(currAbsentStatus == "NO"){
         do{
             println("Current Time In: ${currTimeIn}")
@@ -202,6 +202,7 @@ fun editTimeIn() {
         }while(!input.all { char -> char.isDigit()} || input.length != 4)
     }else{
         println("You Are Absent Today!")
+        // replace later with Absent Status and show currtime as "-"
     }
 }
 
@@ -228,5 +229,6 @@ fun editTimeOut() {
         }while(!input.all { char -> char.isDigit()} || input.length != 4)
     }else{
         println("You Are Absent Today!")
+        // replace later with Absent Status and show currtime as "-"
     }
 }
