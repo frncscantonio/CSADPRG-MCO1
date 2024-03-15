@@ -61,7 +61,7 @@ fun main() {
         when (menuInput) {
             "0" -> editDayType()
             "1" -> editAbsentStatus()
-            // "2" -> editTimeIn()
+            "2" -> editTimeIn()
             // "3" -> editTimeOut()
             "N" -> {
                 computeDay()
@@ -122,7 +122,7 @@ fun editAbsentStatus() {
     println("[X]\tCancel Edit")
 
     print("\n>>\t")
-    val input: String? = readLine()?.uppercase()
+    val input: String = readLine()!!.uppercase()
 
     when(input) {
         "Y" -> {
@@ -137,16 +137,9 @@ fun editAbsentStatus() {
             println("\nInvalid input. Current Absent Status remains unchanged.")
             return
         }
-    }
+    }   
 }
 
-// fun editTimeIn() {
-//     /* TODO: should automatically update currShiftType also depending on the user's timeIn */
-// }
-
-// fun editTimeIn() {
-//     /* TODO: simple modification */
-// }
 
 /*  TODO: Work from 2200 to 0600 is considered night shift. An additional 10% of the hourly
 rate is given for every hour of work during the night shift. (Night shift differential). */ 
@@ -185,4 +178,33 @@ fun computeHours(): Int {
       
 }
 
+fun editTimeIn() {
+    /* TODO: should automatically update currShiftType also depending on the user's timeIn */
+    
+    if(currAbsentStatus == "NO"){
+        do{
+            println("Current Time In: ${currTimeIn}")
+            println("Military Time Format e.g., (0100)")
+            println("[X]\tCancel Edit")
 
+            print("\n>>\t")
+            val input : String = (readLine().toString()).uppercase()
+            if(input.length == 1 && input == "X"){
+                return
+            }
+            if(!input.all { char -> char.isDigit()}){
+                println("\nInvalid input. Please Enter Numbers Only.\n\n")
+            }else if(input.length != 4){
+                println("\nInvalid input. Please Enter 4 Numbers Only.\n\n")
+            }else{
+                currTimeIn = input
+            }
+        }while(!input.all { char -> char.isDigit()} || input.length != 4)
+    }else{
+        println("You Are Absent Today!")
+    }
+}
+
+// fun editTimeOut() {
+//     /* TODO: simple modification */
+// }
