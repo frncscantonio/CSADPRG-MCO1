@@ -92,7 +92,7 @@ fun editDayType() {
     println("[X]\tCancel Edit")
 
     print("\n>>\t")
-    val input: String? = readLine()
+    val input: String? = readLine()?.uppercase()
 
     when (input) {
         "N" -> currDayType = "NORMAL_DAY"
