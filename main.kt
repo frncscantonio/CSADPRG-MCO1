@@ -62,7 +62,7 @@ fun main() {
             "0" -> editDayType()
             "1" -> editAbsentStatus()
             "2" -> editTimeIn()
-            // "3" -> editTimeOut()
+            "3" -> editTimeOut()
             "N" -> {
                 computeDay()
                 refreshDay()
@@ -205,6 +205,28 @@ fun editTimeIn() {
     }
 }
 
-// fun editTimeOut() {
-//     /* TODO: simple modification */
-// }
+fun editTimeOut() {
+    /* TODO: simple modification */
+    if(currAbsentStatus == "NO"){
+        do{
+            println("Current Time Out: ${currTimeIn}")
+            println("Military Time Format e.g., (0100)")
+            println("[X]\tCancel Edit")
+
+            print("\n>>\t")
+            val input : String = (readLine().toString()).uppercase()
+            if(input.length == 1 && input == "X"){
+                return
+            }
+            if(!input.all { char -> char.isDigit()}){
+                println("\nInvalid input. Please Enter Numbers Only.\n\n")
+            }else if(input.length != 4){
+                println("\nInvalid input. Please Enter 4 Numbers Only.\n\n")
+            }else{
+                currTimeOut = input
+            }
+        }while(!input.all { char -> char.isDigit()} || input.length != 4)
+    }else{
+        println("You Are Absent Today!")
+    }
+}
