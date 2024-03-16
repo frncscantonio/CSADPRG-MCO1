@@ -6,8 +6,8 @@ val dailySalary: Double = 500.0
 val maxHours = 8
 val workDays = 5
 val normDays = 7
-val inTime = "0900" // TODO: convert to military time
-val outTime = "0900" // TODO: convert to military time
+val inTime = "0900" 
+val outTime = "0900" 
 var salaryPerDay = ArrayList<Double>() 
 var currDay = 0
 
@@ -40,7 +40,6 @@ enum class shiftType(val i: Int) {
 
 fun main() {
     while (currDay < normDays) {
-        
         println("Day ${currDay + 1}")
         println("Day Type: ${currDayType}")
         println("Shift Type: ${currShiftType}")
@@ -74,6 +73,10 @@ fun main() {
 }
 
 fun refreshDay() {
+    if(currDay == 5 || currDay == 6) {
+        currDayType = "REST_DAY"
+        currAbsentStatus = "YES"
+    }
     currShiftType = "REGULAR_SHIFT"
     currDayType = "NORMAL_DAY"
     currAbsentStatus = "NO"
@@ -114,8 +117,6 @@ fun editDayType() {
 
 
 fun editAbsentStatus() {
-    /* TODO: if YES, currTimeIn and currTimeOut should automattically be "-" 
-    and the user cannot modify these until the currentAbsentStatus is NO. */
     println("Current Absent Status: ${currAbsentStatus}\n")
     println("[Y]\tYes")
     println("[N]\tNo")
@@ -147,6 +148,7 @@ fun computeDay() {
     var totalSalary : Double = 0.00
     if(currAbsentStatus == "YES") {
         salaryPerDay.add(totalSalary) // == 0.00
+        /* TODO: need to consider the 2 rest days (payed) */
     } else {
         var numHours = computeHours()
         var overtimeHours = numHours - maxHours
@@ -179,7 +181,6 @@ fun computeHours(): Int {
 }
 
 fun editTimeIn() {
-    /* TODO: should automatically update currShiftType also depending on the user's timeIn */
 
     if(currAbsentStatus == "NO"){
         do{
@@ -207,7 +208,6 @@ fun editTimeIn() {
 }
 
 fun editTimeOut() {
-    /* TODO: simple modification */
     if(currAbsentStatus == "NO"){
         do{
             println("Current Time Out: ${currTimeIn}")
