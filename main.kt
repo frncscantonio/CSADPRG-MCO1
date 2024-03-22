@@ -232,3 +232,7 @@ fun editTimeOut() {
         // replace later with Absent Status and show currtime as "-"
     }
 }
+
+class DayInfo(
+    
+)
