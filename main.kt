@@ -262,7 +262,7 @@ fun storeDay(){
 
 fun printAllDays(){
     for(day in weeklyData) {
-        println("Date:\t\t\t\t ${day.Day}")
+        println("Date: ${day.Day}\n")
         println("Daily Rate:\t\t\t\t ${day.DailyRate}")
         println("IN Time:\t\t\t\t ${day.InTime}")
         println("OUT Time:\t\t\t\t ${day.OutTime}")
