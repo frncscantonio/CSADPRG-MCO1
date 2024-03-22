@@ -10,6 +10,7 @@ val inTime = "0900"
 val outTime = "0900" 
 var salaryPerDay = ArrayList<Double>() 
 var currDay = 0
+val weeklyData = mutableListOf<DayInfo>()
 
 /* default settings per day (can be modified by the user) */
 var currShiftType = "REGULAR_SHIFT"
@@ -64,12 +65,14 @@ fun main() {
             "3" -> editTimeOut()
             "N" -> {
                 computeDay()
+                storeDay()
                 refreshDay()
                 currDay = currDay + 1
             }
             "X" -> exitProcess(0) // TODO: maybe confirmation prompt?
         }
     }
+    printAllDays()
 }
 
 fun refreshDay() {
@@ -161,6 +164,7 @@ fun computeDay() {
             salaryPerDay.add(totalSalary) 
         }
     }
+    
 } 
 
 fun computeHours(): Int {
@@ -234,5 +238,39 @@ fun editTimeOut() {
 }
 
 class DayInfo(
-    
+    val Day: String,
+    val DailyRate: Double,
+    val InTime: String,
+    val OutTime: String,
+    val OverTimeHR: Int,
+    val DaySalary: Double
 )
+
+fun storeDay(){
+    var day = ""
+    when(currDay){
+        0 -> day = "Monday"
+        1 -> day = "Tuesday"
+        2 -> day = "Wednesday"
+        3 -> day = "Thursday"
+        4 -> day = "Friday"
+        5 -> day = "Saturday"
+        6 -> day = "Sunday"
+    }
+    weeklyData.add(DayInfo(day ,500.00, currTimeIn, currTimeOut, 0, 500.00)) //change ples
+}
+
+fun printAllDays(){
+    for(day in weeklyData) {
+        println("Date:\t\t\t\t ${day.Day}")
+        println("Daily Rate:\t\t\t\t ${day.DailyRate}")
+        println("IN Time:\t\t\t\t ${day.InTime}")
+        println("OUT Time:\t\t\t\t ${day.OutTime}")
+        println("Hours Overtime (Night Shift Overtime):\t ${day.OverTimeHR}")
+        println("Salary for the day:\t\t\t ${day.DaySalary}\n\n\n")
+        if(day.OverTimeHR > 0){
+            println("Computation:\nDaily Rate:\t\t\t\t ${day.DailyRate}\nHours OT x OT Hourly Rate: insert here")
+            // change print above
+        }
+    }
+}
