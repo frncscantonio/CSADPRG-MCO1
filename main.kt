@@ -261,6 +261,7 @@ fun storeDay(){
 }
 
 fun printAllDays(){
+    // give user option if they would like to see the weeklyinfo
     for(day in weeklyData) {
         println("Date: ${day.Day}\n")
         println("Daily Rate:\t\t\t\t ${day.DailyRate}")
