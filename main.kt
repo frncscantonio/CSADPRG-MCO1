@@ -270,7 +270,7 @@ fun printAllDays(){
         println("Salary for the day:\t\t\t ${day.DaySalary}\n\n\n")
         if(day.OverTimeHR > 0){
             println("Computation:\nDaily Rate:\t\t\t\t ${day.DailyRate}\nHours OT x OT Hourly Rate: insert here")
-            // change print above
+            // change print above 
         }
     }
 }
