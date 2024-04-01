@@ -215,7 +215,7 @@ fun computeDay() {
     } 
     
     // payed rest days salary
-    else if(currAbsentStatus == "NO" && dayType == "REST_DAY") {
+    else if(currAbsentStatus == "NO" && dayType != "NORMAL_DAY") {
         totalSalary += dailySalary 
         salaryPerDay.add(totalSalary)
     }
@@ -249,6 +249,8 @@ fun computeDay() {
                 }
                 i += 100
             }
+            
+            salaryPerDay.add(totalSalary)
         }
     }
 } 
