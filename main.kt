@@ -33,12 +33,6 @@ enum class dayType(val multipliers: DoubleArray) {
     }
 }
 
-enum class shiftType(val i: Int) {
-    REGULAR_SHIFT(1),
-    NIGHT_SHIFT(2)
-}
-
-
 fun main() {
     while (currDay < normDays) {
         println("Day ${currDay + 1}")
@@ -87,6 +81,8 @@ fun refreshDay() {
     currTimeOut = outTime
 }
 
+
+// TODO: day 6 and 7 should automatically be rest days
 fun editDayType() {
     println("Current Day Type: ${currDayType}")
     println("[N]\tNormal Day")
@@ -144,24 +140,120 @@ fun editAbsentStatus() {
     }   
 }
 
+// fun computeDay() {
+//     var totalSalary : Double = 0.00
+//     val hourlyRate : Double = dailySalary / maxHours
 
-/*  TODO: Work from 2200 to 0600 is considered night shift. An additional 10% of the hourly
-rate is given for every hour of work during the night shift. (Night shift differential). */ 
+//     // absent during normal day => not payed
+//     if(currAbsentStatus == "YES" && dayType == "NORMAL_DAY") {
+//         salaryPerDay.add(totalSalary) // == 0.00
+//     } 
+    
+//     // payed rest days salary
+//     else if(currAbsentStatus == "NO" && dayType == "REST_DAY") {
+//         totalSalary += dailySalary 
+//         salaryPerDay.add(totalSalary)
+//     }
+
+//     else {
+//         var numHours = computeHours()
+//         var overtimeHours = numHours - maxHours
+//         var multiplier = Double = 0.00
+
+//         totalSalary += dailySalary 
+
+//         // regular daily salary
+//         if(currDayType == "NORMAL_DAY" && numHours == maxHours && overtimeHours == 0 && currTimeIn.toInt() >= 0600 ) {
+//             salaryPerDay.add(totalSalary)
+//         }
+
+//         // with no overtime hours
+//         else if(overtimeHours == 0) {
+//             for(int i = currTimeIn.toInt(); i != currTimeOut; i += 100) {
+//                 if(i == 2400) { 
+//                     i == 0000 // refresh to 00:00
+//                 }
+
+//                 // night shift (w night differential)
+//                 if(i >= 2200 && i <= 0600) { 
+//                     totalSalary = totalSalary + ((hourlyRate * dayType.valueOf(currDayType).multipliers[0]) * 0.1)
+//                 }
+                
+//                 // non-night shift (no night differential)
+//                 else { 
+//                     totalSalary = totalSalary + (hourlyRate * dayType.valueOf(currDayType).multipliers[0])
+//                 }
+//             }
+//         }
+
+//         // with overtime hours
+//         else if(overtimeHours) {
+//             for(int i = currTimeIn.toInt(); i < currTimeOut.toInt() || i > inTime.toInt(); i += 100) {
+//                 if(i == 2400) { 
+//                     i == 0000 // refresh to 00:00
+//                 }
+
+//                 // night shift (w night differential)
+//                 if(i >= 2200 && i <= 0600) { 
+//                     totalSalary = totalSalary + ((hourlyRate * dayType.valueOf(currDayType).multipliers[1]) * 0.1)
+//                 }
+                
+//                 // non-night shift (no night differential)
+//                 else { 
+//                     totalSalary = totalSalary + (hourlyRate * dayType.valueOf(currDayType).multipliers[2])
+//                 }
+//             }
+//         }
+//     }
+// } 
+
+
 fun computeDay() {
     var totalSalary : Double = 0.00
-    if(currAbsentStatus == "YES") {
+    val hourlyRate : Double = dailySalary / maxHours
+
+    // absent during normal day => not payed
+    if(currAbsentStatus == "YES" && dayType == "NORMAL_DAY") {
         salaryPerDay.add(totalSalary) // == 0.00
-        /* TODO: need to consider the 2 rest days (payed) */
-    } else {
+    } 
+    
+    // payed rest days salary
+    else if(currAbsentStatus == "NO" && dayType != "NORMAL_DAY") {
+        totalSalary += dailySalary 
+        salaryPerDay.add(totalSalary)
+    }
+
+    else {
         var numHours = computeHours()
         var overtimeHours = numHours - maxHours
-        
-        if(overtimeHours > 0) {
-            totalSalary = dailySalary + ((dailySalary * dayType.valueOf(currDayType).multipliers[shiftType.valueOf(currShiftType).i]) * overtimeHours) // TODO: double check
-            salaryPerDay.add(totalSalary) 
-        } else {
-            totalSalary = dailySalary + (dailySalary * dayType.valueOf(currDayType).multipliers[shiftType.valueOf(currShiftType).i])
-            salaryPerDay.add(totalSalary) 
+
+        totalSalary += dailySalary 
+
+        // regular daily salary
+        if(currDayType == "NORMAL_DAY" && numHours == maxHours && overtimeHours == 0 && currTimeIn.toInt() >= 0600 ) {
+            salaryPerDay.add(totalSalary)
+        }
+
+        else {
+            val multiplierIndex = if (overtimeHours > 0) 1 else 0
+
+            var i = currTimeIn.toInt()
+            while (i < currTimeOut.toInt() || i > inTime.toInt()) {
+                if (i == 2400) {
+                    i = 0 // refresh to 00:00
+                }
+
+                val multiplier = dayType.valueOf(currDayType).multipliers[multiplierIndex]
+
+                if (i >= 2200 || i < 600) {
+                    totalSalary += hourlyRate * multiplier * 0.1 // night shift with night differential
+                } else {
+                    totalSalary += hourlyRate * multiplier // non-night shift without night differential
+                }
+                i += 100
+            }
+            
+            salaryPerDay.add(totalSalary)
         }
     }
     
