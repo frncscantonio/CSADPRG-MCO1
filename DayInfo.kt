@@ -12,7 +12,13 @@ class DayInfo(
 ) {
 
     fun editDayType() {
-        println("Current Day Type: $DayType")
+        println("\nCurrent Day Type: $DayType")
+        println("[N]\tNORMAL_DAY")
+        println("[R]\tREST_DAY")
+        println("[SNW]\tSNW")
+        println("[SNWR]\tSPECIAL_NON_WORKING_DAY_AND_REST_DAY")
+        println("[RH]\tREGULAR_HOLIDAY")
+        println("[RHR]\tREGULAR_HOLIDAY_AND_REST_DAY")
         println("[X]\tCancel Edit")
 
         print("\n>>\t")
@@ -32,52 +38,44 @@ class DayInfo(
     }
 
     fun editTimeIn() {
-        if (DayType == "NORMAL_DAY") {
-            do {
-                println("Current Time In: $InTime")
-                println("Military Time Format e.g., (0100)")
-                println("[X]\tCancel Edit")
+        do {
+            println("\nCurrent Time In: $InTime")
+            println("Military Time Format e.g., (0100)")
+            println("[X]\tCancel Edit")
 
-                print("\n>>\t")
-                val input: String = (readLine()?.uppercase() ?: "")
-                if (input.length == 1 && input == "X") {
-                    return
-                }
-                if (!input.all { it.isDigit() }) {
-                    println("\nInvalid input. Please Enter Numbers Only.\n\n")
-                } else if (input.length != 4) {
-                    println("\nInvalid input. Please Enter 4 Numbers Only.\n\n")
-                } else {
-                    InTime = input
-                }
-            } while (!input.all { it.isDigit() } || input.length != 4)
-        } else {
-            println("You Are Absent Today!")
-        }
+            print("\n>>\t")
+            val input: String = (readLine()?.uppercase() ?: "")
+            if (input.length == 1 && input == "X") {
+                return
+            }
+            if (!input.all { it.isDigit() }) {
+                println("\nInvalid input. Please Enter Numbers Only.\n\n")
+            } else if (input.length != 4) {
+                println("\nInvalid input. Please Enter 4 Numbers Only.\n\n")
+            } else {
+                InTime = input
+            }
+        } while (!input.all { it.isDigit() } || input.length != 4)
     }
 
     fun editTimeOut() {
-        if (DayType == "NORMAL_DAY") {
-            do {
-                println("Current Time Out: $OutTime")
-                println("Military Time Format e.g., (0100)")
-                println("[X]\tCancel Edit")
+        do {
+            println("\nCurrent Time Out: $OutTime")
+            println("Military Time Format e.g., (0100)")
+            println("[X]\tCancel Edit")
 
-                print("\n>>\t")
-                val input: String = (readLine()?.uppercase() ?: "")
-                if (input.length == 1 && input == "X") {
-                    return
-                }
-                if (!input.all { it.isDigit() }) {
-                    println("\nInvalid input. Please Enter Numbers Only.\n\n")
-                } else if (input.length != 4) {
-                    println("\nInvalid input. Please Enter 4 Numbers Only.\n\n")
-                } else {
-                    OutTime = input
-                }
-            } while (!input.all { it.isDigit() } || input.length != 4)
-        } else {
-            println("You Are Absent Today!")
-        }
+            print("\n>>\t")
+            val input: String = (readLine()?.uppercase() ?: "")
+            if (input.length == 1 && input == "X") {
+                return
+            }
+            if (!input.all { it.isDigit() }) {
+                println("\nInvalid input. Please Enter Numbers Only.\n\n")
+            } else if (input.length != 4) {
+                println("\nInvalid input. Please Enter 4 Numbers Only.\n\n")
+            } else {
+                OutTime = input
+            }
+        } while (!input.all { it.isDigit() } || input.length != 4)
     }
 }
