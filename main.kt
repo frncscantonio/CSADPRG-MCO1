@@ -1,6 +1,4 @@
 import kotlin.system.exitProcess
-import kotlin.text.toLowerCase
-import kotlin.text.lowercase
 
 val dailySalary: Double = 500.0
 val maxHours = 8
@@ -8,16 +6,8 @@ val workDays = 5
 val normDays = 7
 val inTime = "0900" 
 val outTime = "0900" 
-var salaryPerDay = ArrayList<Double>() 
 var currDay = 0
 val weeklyData = mutableListOf<DayInfo>()
-
-/* default settings per day (can be modified by the user) */
-var currShiftType = "REGULAR_SHIFT"
-var currDayType = "NORMAL_DAY"
-var currAbsentStatus = "NO"
-var currTimeIn = inTime
-var currTimeOut = outTime
 
 enum class dayType(val multipliers: DoubleArray) {
     NORMAL_DAY(doubleArrayOf(1.0, 1.25, 1.375)),
@@ -33,25 +23,29 @@ enum class dayType(val multipliers: DoubleArray) {
     }
 }
 
-enum class shiftType(val i: Int) {
-    REGULAR_SHIFT(1),
-    NIGHT_SHIFT(2)
-}
-
-
 fun main() {
+
+    var isNLast = false
+    var day = DayInfo(currDay.toString(), dailySalary, "NORMAL_DAY", inTime, outTime, 0.0)
+
     while (currDay < normDays) {
-        println("Day ${currDay + 1}")
-        println("Day Type: ${currDayType}")
-        println("Shift Type: ${currShiftType}")
-        println("Absent? ${currAbsentStatus}")
-        println("Time in: ${currTimeIn}")
-        println("Time out: ${currTimeOut}\n")
+        if(isNLast) {
+            if(currDay == 5 || currDay == 6) {
+                day = DayInfo(currDay.toString(), dailySalary, "REST_DAY", inTime, outTime, 0.0)
+            } else {
+                day = DayInfo(currDay.toString(), dailySalary, "NORMAL_DAY", inTime, outTime, 0.0)
+            }
+            
+        }
+
+        println("\nDay ${currDay + 1}")
+        println("Day Type: ${day.DayType}")
+        println("Time in: ${day.InTime}")
+        println("Time out: ${day.OutTime}\n")
 
         println("[0]\tEdit Day Type")
-        println("[1]\tEdit Absent Status")
-        println("[2]\tEdit Time In")
-        println("[3]\tEdit Time Out")
+        println("[1]\tEdit Time In")
+        println("[2]\tEdit Time Out")
         println("[N]\tNext Day")
         println("[X]\tExit Program")
 
@@ -59,15 +53,14 @@ fun main() {
         val menuInput: String? = readLine()?.uppercase()
 
         when (menuInput) {
-            "0" -> editDayType()
-            "1" -> editAbsentStatus()
-            "2" -> editTimeIn()
-            "3" -> editTimeOut()
+            "0" -> {day.editDayType(); isNLast = false;}
+            "1" -> {day.editTimeIn(); isNLast = false;}
+            "2" -> {day.editTimeOut(); isNLast = false;}
             "N" -> {
-                computeDay()
-                storeDay()
-                refreshDay()
+                computeDay(day)
+                storeDay(day)
                 currDay = currDay + 1
+                isNLast = true
             }
             "X" -> exitProcess(0) // TODO: maybe confirmation prompt?
         }
@@ -75,203 +68,120 @@ fun main() {
     printAllDays()
 }
 
-fun refreshDay() {
-    if(currDay == 5 || currDay == 6) {
-        currDayType = "REST_DAY"
-        currAbsentStatus = "YES"
-    }
-    currShiftType = "REGULAR_SHIFT"
-    currDayType = "NORMAL_DAY"
-    currAbsentStatus = "NO"
-    currTimeIn = inTime
-    currTimeOut = outTime
-}
-
-fun editDayType() {
-    println("Current Day Type: ${currDayType}")
-    println("[N]\tNormal Day")
-    println("[R]\tRest Day")
-    println("[SNW]\tSpecial Non-Working Day")
-    println("[SNWR]\tSpecial Non-Working Day & Rest Day")
-    println("[RH]\tRegular Holiday")
-    println("[RHR]\tRegular Holiday & Rest Day")
-    println("[X]\tCancel Edit")
-
-    print("\n>>\t")
-    val input: String? = readLine()?.uppercase()
-
-    when (input) {
-        "N" -> currDayType = "NORMAL_DAY"
-        "R" -> currDayType = "REST_DAY"
-        "SNW" -> currDayType = "SPECIAL_NON_WORKING_DAY"
-        "SNWR" -> currDayType = "SPECIAL_NON_WORKING_DAY_AND_REST_DAY"
-        "RH" -> currDayType = "REGULAR_HOLIDAY"
-        "RHR" -> currDayType = "REGULAR_HOLIDAY_AND_REST_DAY"
-        "X" -> { println("\nCurrent Day Type remains unchanged.")
-                 return }
-        else -> {
-            println("\nInvalid input. Current Day Type remains unchanged.")
-            return
-        }
-    }    
-
-    println("\nCurrent Day Type successfully changed.")
-}
 
 
-fun editAbsentStatus() {
-    println("Current Absent Status: ${currAbsentStatus}\n")
-    println("[Y]\tYes")
-    println("[N]\tNo")
-    println("[X]\tCancel Edit")
+fun computeDay(day: DayInfo) {
+        var totalSalary : Double = 0.00
+        val hourlyRate : Double = dailySalary / maxHours
 
-    print("\n>>\t")
-    val input: String = readLine()!!.uppercase()
-
-    when(input) {
-        "Y" -> {
-            currTimeIn == "-"
-            currTimeOut == "-"
-            currAbsentStatus = "YES"
-        }
-        "N" -> currAbsentStatus = "NO"
-        "X" -> { println("\nCurrent Absent Status remains unchanged.")
-                 return}
-        else -> {
-            println("\nInvalid input. Current Absent Status remains unchanged.")
-            return
-        }
-    }   
-}
-
-
-/*  TODO: Work from 2200 to 0600 is considered night shift. An additional 10% of the hourly
-rate is given for every hour of work during the night shift. (Night shift differential). */ 
-fun computeDay() {
-    var totalSalary : Double = 0.00
-    if(currAbsentStatus == "YES") {
-        salaryPerDay.add(totalSalary) // == 0.00
-        /* TODO: need to consider the 2 rest days (payed) */
-    } else {
-        var numHours = computeHours()
-        var overtimeHours = numHours - maxHours
+        // absent during normal day => not payed
+        if(isAbsent(day) && day.DayType == "NORMAL_DAY") {
+            totalSalary = 0.00 // == 0.00
+        } 
         
-        if(overtimeHours > 0) {
-            totalSalary = dailySalary + ((dailySalary * dayType.valueOf(currDayType).multipliers[shiftType.valueOf(currShiftType).i]) * overtimeHours) // TODO: double check
-            salaryPerDay.add(totalSalary) 
+        // payed rest days salary
+        else if(isAbsent(day) && day.DayType != "NORMAL_DAY") {
+            totalSalary += dailySalary 
+        }
+
+        else {
+
+            var i = ((day.InTime).substring(0,2)).toInt() + 1;
+            var cntr = 1;
+            do {
+                // w night differential
+                if(isNS(i)) { 
+                    if (cntr > 8) {
+                        totalSalary += ((hourlyRate * dayType.valueOf(day.DayType).multipliers[2])); // overtime
+                    } else {
+                        totalSalary += ((hourlyRate * dayType.valueOf(day.DayType).multipliers[0]) + (hourlyRate *  1.10));
+                    }
+                }
+                
+                // no night differential
+                else { 
+                    if (cntr > 8) {
+                        totalSalary += ((hourlyRate * dayType.valueOf(day.DayType).multipliers[1])); // overtime
+                    } else {
+                        totalSalary += ((hourlyRate * dayType.valueOf(day.DayType).multipliers[0]));
+                    }
+                }
+                i++;
+                cntr++;
+
+                if(i == 24) { 
+                    i = 0; // refresh to 00:00
+                }
+            } while(i != ((day.OutTime).substring(0,2)).toInt())
+        }
+
+        
+        day.DaySalary = String.format("%.2f", totalSalary).toDouble()
+    } 
+
+    fun isAbsent(day: DayInfo): Boolean {
+        if (day.InTime == day.OutTime) {
+            return true
         } else {
-            totalSalary = dailySalary + (dailySalary * dayType.valueOf(currDayType).multipliers[shiftType.valueOf(currShiftType).i])
-            salaryPerDay.add(totalSalary) 
+            return false
         }
     }
-    
-} 
 
-fun computeHours(): Int {
-    
-    var hrInTime = (currTimeIn.substring(0,2)).toInt() + 1 // get hours only 
-    var hrOutTime = (currTimeOut.substring(0,2)).toInt() + 1 // get hours only
-    var hours: Int = 0
-    while(hrInTime != hrOutTime){
-        if(hrInTime == 24){
-            hrInTime = 0 // refresh to 00:00
+    fun isNS(x: Int): Boolean {
+        return when {
+            x in 0..6 -> true // 0 to 6
+            x in 22..23 -> true // 19 to 24
+            else -> false
         }
-        hrInTime++
-        hours++
     }
-    return hours
-    
-      
-}
 
-fun editTimeIn() {
-
-    if(currAbsentStatus == "NO"){
-        do{
-            println("Current Time In: ${currTimeIn}")
-            println("Military Time Format e.g., (0100)")
-            println("[X]\tCancel Edit")
-
-            print("\n>>\t")
-            val input : String = (readLine().toString()).uppercase()
-            if(input.length == 1 && input == "X"){
-                return
-            }
-            if(!input.all { char -> char.isDigit()}){
-                println("\nInvalid input. Please Enter Numbers Only.\n\n")
-            }else if(input.length != 4){
-                println("\nInvalid input. Please Enter 4 Numbers Only.\n\n")
-            }else{
-                currTimeIn = input
-            }
-        }while(!input.all { char -> char.isDigit()} || input.length != 4)
-    }else{
-        println("You Are Absent Today!")
-        // replace later with Absent Status and show currtime as "-"
+fun storeDay(day: DayInfo){
+    when(day.Day){
+        "0" -> day.Day = "Monday"
+        "1" -> day.Day = "Tuesday"
+        "2" -> day.Day = "Wednesday"
+        "3" -> day.Day = "Thursday"
+        "4" -> day.Day = "Friday"
+        "5" -> day.Day = "Saturday"
+        "6" -> day.Day = "Sunday"
     }
-}
-
-fun editTimeOut() {
-    if(currAbsentStatus == "NO"){
-        do{
-            println("Current Time Out: ${currTimeIn}")
-            println("Military Time Format e.g., (0100)")
-            println("[X]\tCancel Edit")
-
-            print("\n>>\t")
-            val input : String = (readLine().toString()).uppercase()
-            if(input.length == 1 && input == "X"){
-                return
-            }
-            if(!input.all { char -> char.isDigit()}){
-                println("\nInvalid input. Please Enter Numbers Only.\n\n")
-            }else if(input.length != 4){
-                println("\nInvalid input. Please Enter 4 Numbers Only.\n\n")
-            }else{
-                currTimeOut = input
-            }
-        }while(!input.all { char -> char.isDigit()} || input.length != 4)
-    }else{
-        println("You Are Absent Today!")
-        // replace later with Absent Status and show currtime as "-"
-    }
-}
-
-class DayInfo(
-    val Day: String,
-    val DailyRate: Double,
-    val InTime: String,
-    val OutTime: String,
-    val OverTimeHR: Int,
-    val DaySalary: Double
-)
-
-fun storeDay(){
-    var day = ""
-    when(currDay){
-        0 -> day = "Monday"
-        1 -> day = "Tuesday"
-        2 -> day = "Wednesday"
-        3 -> day = "Thursday"
-        4 -> day = "Friday"
-        5 -> day = "Saturday"
-        6 -> day = "Sunday"
-    }
-    weeklyData.add(DayInfo(day ,500.00, currTimeIn, currTimeOut, 0, 500.00)) //change ples
+    weeklyData.add(day)
 }
 
 fun printAllDays(){
-    // give user option if they would like to see the weeklyinfo
+    var totalSalary : Double = 0.00
+    println("___________________________________________________________")
+
     for(day in weeklyData) {
-        println("Date: ${day.Day}\n")
+        println("\nDate: ${day.Day}\n")
         println("Daily Rate:\t\t\t\t ${day.DailyRate}")
+        println("Day Type: \t\t\t\t ${day.DayType}")
         println("IN Time:\t\t\t\t ${day.InTime}")
         println("OUT Time:\t\t\t\t ${day.OutTime}")
-        println("Hours Overtime (Night Shift Overtime):\t ${day.OverTimeHR}")
+        // println("Hours Overtime (Night Shift Overtime):\t ${day.OverTimeHR}")
         println("Salary for the day:\t\t\t ${day.DaySalary}\n\n\n")
-        if(day.OverTimeHR > 0){
-            println("Computation:\nDaily Rate:\t\t\t\t ${day.DailyRate}\nHours OT x OT Hourly Rate: insert here")
-            // change print above
-        }
+        // if(day.OverTimeHR > 0){
+        //     println("Computation:\nDaily Rate:\t\t\t\t ${day.DailyRate}\nHours OT x OT Hourly Rate: insert here")
+        //     // change print above 
+        // }
+
+        totalSalary += day.DaySalary
     }
+    println("\nTOTAL SALARY FOR THE WEEK:\t\t\t ${totalSalary}\n\n\n")
 }
+
+    // fun computeHours(): Int {
+    
+    // var hrInTime = (currTimeIn.substring(0,2)).toInt() + 1 // get hours only 
+    // var hrOutTime = (currTimeOut.substring(0,2)).toInt() + 1 // get hours only
+    // var hours: Int = 0
+    // while(hrInTime != hrOutTime){
+    //     if(hrInTime == 24){
+    //         hrInTime = 0 // refresh to 00:00
+    //     }
+    //     hrInTime++
+    //     hours++
+    // }
+    // return hours
+
+    // }
