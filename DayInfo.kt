@@ -10,6 +10,10 @@ class DayInfo(
     var DaySalary: Double
 ) {
 
+    /**
+    * Handles the menu and backend for changing day type
+    * @return -
+    */
     fun editDayType() {
         println("\nCurrent Day Type: $DayType")
         println("[N]\tNORMAL_DAY")
@@ -36,6 +40,10 @@ class DayInfo(
         println("\nCurrent Day Type successfully changed.")
     }
 
+    /**
+    * Handles the menu and backend for changing time in
+    * @return -
+    */
     fun editTimeIn() {
         do {
             println("\nCurrent Time In: $InTime")
@@ -57,6 +65,10 @@ class DayInfo(
         } while (!input.all { it.isDigit() } || input.length != 4)
     }
 
+    /**
+    * Handles the menu and backend for changing time out
+    * @return -
+    */
     fun editTimeOut() {
         do {
             println("\nCurrent Time Out: $OutTime")

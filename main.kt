@@ -26,6 +26,10 @@ enum class dayType(val multipliers: DoubleArray) {
     }
 }
 
+/**
+ * Handles the main menu of the program
+ * @return -
+ */
 fun main() {
 
     var isNLast = false
@@ -72,6 +76,11 @@ fun main() {
     printAllDays()
 }
 
+
+/**
+ * Computes the overall salary for the day
+ * @return -
+ */
 fun computeDay(day: DayInfo) {
     var totalSalary : Double = 0.00
     val hourlyRate : Double = dailySalary / maxHours
@@ -121,6 +130,10 @@ fun computeDay(day: DayInfo) {
     day.DaySalary = String.format("%.2f", totalSalary).toDouble()
 } 
 
+/**
+ * Checks whether or not the employee is absent
+ * @return Boolean
+ */
 fun isAbsent(day: DayInfo): Boolean {
     if (day.InTime == day.OutTime) {
         return true
@@ -129,6 +142,10 @@ fun isAbsent(day: DayInfo): Boolean {
     }
 }
 
+/**
+ * Checks whether the given hour falls under night-shift hours or not
+ * @return Boolean
+ */
 fun isNS(x: Int): Boolean {
     return when {
         x in 0..6 -> true // 0 to 6
@@ -137,6 +154,10 @@ fun isNS(x: Int): Boolean {
     }
 }
 
+/**
+ * Stores a DayInfo object to weeklyData
+ * @return -
+ */
 fun storeDay(day: DayInfo){
     when(day.Day){
         "0" -> day.Day = "Monday"
@@ -150,8 +171,13 @@ fun storeDay(day: DayInfo){
     weeklyData.add(day)
 }
 
+/**
+ * Prints a summary report and the total salary for the week
+ * @return -
+ */
 fun printAllDays(){
     var totalSalary : Double = 0.00
+
     println("___________________________________________________________")
 
     for(day in weeklyData) {
@@ -160,12 +186,7 @@ fun printAllDays(){
         println("Day Type: \t\t\t\t ${day.DayType}")
         println("IN Time:\t\t\t\t ${day.InTime}")
         println("OUT Time:\t\t\t\t ${day.OutTime}")
-        // println("Hours Overtime (Night Shift Overtime):\t ${day.OverTimeHR}")
         println("Salary for the day:\t\t\t ${day.DaySalary}\n\n\n")
-        // if(day.OverTimeHR > 0){
-        //     println("Computation:\nDaily Rate:\t\t\t\t ${day.DailyRate}\nHours OT x OT Hourly Rate: insert here")
-        //     // change print above 
-        // }
 
         totalSalary += day.DaySalary
     }
