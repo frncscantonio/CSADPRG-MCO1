@@ -1,3 +1,9 @@
+/********************
+Last names: ANTONIO, DAMING, FERRER, SHIOZAWA
+Language: Kotlin
+Paradigm(s): Imperative Programming and Object-Oriented Programming
+********************/
+
 import kotlin.system.exitProcess
 
 /* default settings */
