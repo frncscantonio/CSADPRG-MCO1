@@ -7,7 +7,6 @@ class DayInfo(
     var DayType: String,
     var InTime: String,
     var OutTime: String,
-    // val OverTimeHR: Int,
     var DaySalary: Double
 ) {
 
